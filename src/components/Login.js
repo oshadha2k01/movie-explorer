@@ -12,7 +12,6 @@ import {
   Paper,
   InputAdornment,
   IconButton,
-  FormHelperText,
   Fade,
 } from "@mui/material";
 import {
@@ -56,14 +55,14 @@ function Login() {
       return "Username or email is required";
     }
 
-    // Check for special characters (only @ is allowed)
-    const containsSpecialChars = /[^a-zA-Z0-9@]/.test(value);
+    // Check for special characters (only @ and . are allowed)
+    const containsSpecialChars = /[^a-zA-Z0-9@.]/.test(value);
     if (containsSpecialChars) {
-      return "Only letters, numbers, and @ (for email) are allowed";
+      return "Only letters, numbers, @, and . are allowed";
     }
 
     // Check if it's an email format
-    const isEmail = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]{2,}$/.test(value);
+    const isEmail = /^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]{2,}$/.test(value);
 
     if (isEmail) {
       // Email-specific validations
@@ -75,10 +74,10 @@ function Login() {
       }
       return "";
     } else {
-      // Username-specific validations (only alphanumeric)
-      const alphanumericOnly = /^[a-zA-Z0-9]+$/.test(value);
-      if (!alphanumericOnly) {
-        return "Username can only contain letters and numbers";
+      // Username-specific validations (alphanumeric and .)
+      const alphanumericAndDot = /^[a-zA-Z0-9.]+$/.test(value);
+      if (!alphanumericAndDot) {
+        return "Username can only contain letters, numbers, and .";
       }
       if (value.length < 3) {
         return "Username must be at least 3 characters";
@@ -112,10 +111,11 @@ function Login() {
     ];
     const isLetterOrNumber = /[a-zA-Z0-9]/.test(e.key);
     const isAtSymbol = e.key === "@";
+    const isDot = e.key === "."; // Allow dot character
     const isControlKey = allowedKeys.includes(e.key);
     const isModifierKey = e.ctrlKey || e.metaKey || e.altKey;
 
-    if (!isLetterOrNumber && !isAtSymbol && !isControlKey && !isModifierKey) {
+    if (!isLetterOrNumber && !isAtSymbol && !isDot && !isControlKey && !isModifierKey) {
       e.preventDefault();
     }
   };
@@ -262,8 +262,8 @@ function Login() {
             touched.username && errors.username
               ? errors.username
               : username
-              ? "Use letters and numbers only, or enter a valid email"
-              : "Enter a username or email (only @ allowed for emails)"
+              ? "Use letters, numbers, @, or . only, or enter a valid email"
+              : "Enter a username or email (only @ and . allowed)"
           }
           InputProps={{
             startAdornment: (
@@ -296,11 +296,6 @@ function Login() {
             },
           }}
         />
-        {touched.username && errors.username && (
-          <FormHelperText error sx={{ ml: 2, mt: -0.5, mb: 1 }}>
-            {errors.username}
-          </FormHelperText>
-        )}
 
         <TextField
           label="Password"
@@ -352,11 +347,6 @@ function Login() {
             },
           }}
         />
-        {touched.password && errors.password && (
-          <FormHelperText error sx={{ ml: 2, mt: -0.5, mb: 1 }}>
-            {errors.password}
-          </FormHelperText>
-        )}
 
         <Button
           type="submit"
