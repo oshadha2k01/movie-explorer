@@ -76,7 +76,7 @@ This project uses the [TMDb API](https://developers.themoviedb.org/3) to fetch m
 
 ## 🌐 Live Demo
 
-[View Live Demo](https://movie-explorer-demo.netlify.app/) 
+[View Live Demo](https://movie-explorer-omega-six.vercel.app/login) 
 
 ## 🔮 Future Enhancements
 
