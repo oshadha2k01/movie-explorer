@@ -1,18 +1,42 @@
-#  Movie Explorer
+# Movie Explorer
 
 A feature-rich React application that allows users to discover trending movies, search for their favorite films, and manage their personalized watch lists.
 
-
 ## ✨ Features
 
-- **User Authentication** - Securely log in and maintain user-specific data
-- **Trending Movies** - Browse the latest trending movies (today/this week)
-- **Search Functionality** - Find movies by title with real-time results
-- **Advanced Filtering** - Filter movies by genre, year, and rating
-- **Movie Details** - View comprehensive information about each movie
-- **Favorites System** - Save and organize your favorite movies
-- **Dark/Light Mode** - Toggle between theme preferences with automatic persistence
-- **Responsive Design** - Optimized viewing experience across all devices
+- **User Authentication** 
+  - Secure registration with real-time field validation
+  - Email/username format detection and validation
+  - Login with credentials persistence
+
+- **Trending Movies** 
+  - Browse latest trending movies (today/this week)
+  - "Load More" functionality for better user experience
+
+- **Search Functionality** 
+  - Real-time search as you type
+  - Search history tracking per user
+  - Advanced filtering options
+
+- **Movie Details** 
+  - Comprehensive movie information display
+  - Watch trailers in a modal popup
+  - View cast information and production details
+  - Budget and revenue statistics
+
+- **Favorites System** 
+  - User-specific favorites collection
+  - One-click add/remove from any movie card
+
+- **Dark/Light Mode** 
+  - Toggle between theme preferences
+  - Automatic theme persistence
+  - Optimized contrast for both modes
+
+- **Responsive Design** 
+  - Adaptive layout for mobile, tablet and desktop
+  - Touch-friendly interface elements
+  - Collapsible navigation on smaller screens
 
 ## 🛠️ Technologies
 
@@ -23,6 +47,7 @@ A feature-rich React application that allows users to discover trending movies, 
 - **Axios** - HTTP client for API requests
 - **localStorage** - Client-side storage for user preferences and data
 - **TMDb API** - Real-time movie data source
+- **React Toastify** - Notification system for user feedback
 
 ## 📋 Prerequisites
 
@@ -68,11 +93,29 @@ This project uses the [TMDb API](https://developers.themoviedb.org/3) to fetch m
 
 - **Trending Movies**: `/trending/movie/{time_window}` - Gets daily or weekly trending movies
 - **Search**: `/search/movie` - Searches for movies by title with optional filters
-- **Movie Details**: `/movie/{movie_id}` - Retrieves comprehensive information about a specific movie
+- **Movie Details**: `/movie/{movie_id}` - Retrieves comprehensive information about a specific movie including videos and cast
 
-## 🖼️ Screenshots
+## 🌟 Recent Updates
 
-*Add screenshots of your application here showcasing different features and views*
+- **Enhanced Authentication**
+  - Improved form validation with real-time feedback
+  - Special character restriction for usernames
+  - Email format detection and validation
+  
+- **Improved Search Experience**
+  - User-specific recent searches
+  - Enhanced UI with visual feedback
+
+- **UI/UX Enhancements**
+  - Movie card redesign with better visibility in dark mode
+  - Modal trailer viewing
+  - Improved button styles with hover effects
+  - Gradient backgrounds and modern UI elements
+
+- **Performance Optimization**
+  - Load more button instead of infinite scroll
+  - User-specific data segregation
+  - Debounced search functionality
 
 ## 🌐 Live Demo
 
@@ -84,6 +127,9 @@ This project uses the [TMDb API](https://developers.themoviedb.org/3) to fetch m
 - Social sharing functionality
 - Personalized movie recommendations
 - Advanced search with cast/crew filtering
+- Watch history tracking
+- Multi-language support
+- Offline capability with PWA features
 
 ## 👤 Author
 
@@ -93,4 +139,5 @@ This project uses the [TMDb API](https://developers.themoviedb.org/3) to fetch m
 
 - [The Movie Database (TMDb)](https://www.themoviedb.org/) for providing the API
 - [Material-UI](https://mui.com/) for the component library
+- [React Toastify](https://fkhadra.github.io/react-toastify/) for notification system
 - All open-source libraries and tools used in this project
