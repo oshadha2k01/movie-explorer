@@ -6,10 +6,15 @@ import { Typography, Box, Grid, Alert } from "@mui/material";
 function Favorites() {
   const { favorites, user } = useContext(MovieContext);
 
+  // Get displayName by removing the email domain if username is an email
+  const displayName = user?.username?.includes('@') 
+    ? user.username.split('@')[0] 
+    : user?.username;
+
   return (
     <Box sx={{ my: 4 }}>
       <Typography variant="h5" gutterBottom>
-        {user?.username}'s Favorite Movies
+        {displayName}'s Favorite Movies
       </Typography>
 
       {favorites.length === 0 ? (

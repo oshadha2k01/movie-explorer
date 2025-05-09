@@ -80,7 +80,7 @@ function SearchResultsPage() {
         <>
           <Grid container spacing={3} sx={{ my: 2 }}>
             {allMovies.map((movie) => (
-              <Grid item key={movie.id} xs={12} sm={6} md={4} lg={3}>
+              <Grid item key={movie.id} xs={12} sm={6} md={4}>
                 <MovieCard movie={movie} />
               </Grid>
             ))}
@@ -95,11 +95,26 @@ function SearchResultsPage() {
                 size="large"
                 onClick={handleLoadMore}
                 disabled={isLoading}
+                sx={{ 
+                  minWidth: '200px',
+                  py: 1,
+                  fontWeight: 'bold',
+                  borderRadius: 2
+                }}
               >
                 Load More
               </Button>
             ) : (
-              <Typography variant="body2" color="textSecondary">
+              <Typography 
+                variant="body2" 
+                color="textSecondary"
+                sx={{ 
+                  padding: 2, 
+                  bgcolor: 'background.paper', 
+                  borderRadius: 1,
+                  boxShadow: 1
+                }}
+              >
                 No more results to load
               </Typography>
             )}

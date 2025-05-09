@@ -24,7 +24,7 @@ function LoginPage() {
         minHeight: "calc(100vh - 100px)",
       }}
     >
-      <Paper elevation={3} sx={{ p: 4, maxWidth: 450, width: "100%" }}>
+      <Paper elevation={3} sx={{ p: 4, maxWidth: 450, width: "100%"}}>
         <Typography variant="h4" component="h1" gutterBottom align="center">
           Movie Explorer
         </Typography>

@@ -12,12 +12,15 @@ import FavoritesPage from "./pages/FavoritesPage";
 import LoginPage from "./pages/LoginPage";
 import SearchResultsPage from "./pages/SearchResultsPage";
 import NavBar from "./components/NavBar";
+import RegisterPage from "./pages/RegisterPage";
 import {
   CssBaseline,
   Container,
   createTheme,
   ThemeProvider,
 } from "@mui/material";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import "./styles.css";
 
 function App() {
@@ -52,6 +55,7 @@ function App() {
         <Container>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
             <Route
               path="/"
               element={isAuthenticated ? <Home /> : <Navigate to="/login" />}
@@ -80,6 +84,20 @@ function App() {
             />
           </Routes>
         </Container>
+        
+        {/* Toast notifications container */}
+        <ToastContainer 
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme={themeMode}
+        />
       </Router>
     </ThemeProvider>
   );

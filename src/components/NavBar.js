@@ -69,9 +69,12 @@ const NavBar = () => {
       {isAuthenticated && (
         <Box sx={{ p: 2, display: 'flex', alignItems: 'center', borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }}>
           <Avatar sx={{ width: 40, height: 40, mr: 2, bgcolor: 'secondary.main' }}>
-            {user?.username.charAt(0).toUpperCase()}
+            {user?.username?.charAt(0).toUpperCase()}
           </Avatar>
-          <Typography variant="subtitle1">Hi, {user?.username}</Typography>
+          <Typography variant="subtitle1">Hi, {user?.username?.includes('@') 
+            ? user.username.split('@')[0] 
+            : user?.username
+          }</Typography>
         </Box>
       )}
       
@@ -158,17 +161,30 @@ const NavBar = () => {
                   color="inherit" 
                   onClick={handleFavoritesClick}
                   startIcon={<FavoriteIcon />}
-                  sx={{ mr: 2 }}
+                  sx={{ 
+                    mr: 2,
+                    borderRadius: 6,
+                    px: 2,
+                    py: 0.8,
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                      bgcolor: 'rgba(255,255,255,0.15)',
+                      transform: 'translateY(-2px)'
+                    }
+                  }}
                 >
                   Favorites
                 </Button>
                 
                 <Box sx={{ display: 'flex', alignItems: 'center', mr: 3 }}>
                   <Avatar sx={{ width: 32, height: 32, mr: 1, bgcolor: 'secondary.main' }}>
-                    {user?.username.charAt(0).toUpperCase()}
+                    {user?.username?.charAt(0).toUpperCase()}
                   </Avatar>
-                  <Typography variant="body1">
-                    Hi, {user?.username}
+                  <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
+                    Hi, {user?.username?.includes('@') 
+                      ? user.username.split('@')[0]
+                      : user?.username
+                    }
                   </Typography>
                 </Box>
                 
@@ -176,7 +192,17 @@ const NavBar = () => {
                   color="inherit" 
                   onClick={handleLogout}
                   startIcon={<LogoutIcon />}
-                  sx={{ mr: 2 }}
+                  sx={{ 
+                    mr: 2,
+                    borderRadius: 6,
+                    px: 2,
+                    py: 0.8,
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                      bgcolor: 'rgba(255,255,255,0.15)',
+                      transform: 'translateY(-2px)'
+                    }
+                  }}
                 >
                   Logout
                 </Button>

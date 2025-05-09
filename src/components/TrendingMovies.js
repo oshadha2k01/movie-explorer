@@ -29,9 +29,9 @@ function TrendingMovies() {
           No trending movies found.
         </Typography>
       ) : (
-        <Grid container spacing={2}>
+        <Grid container spacing={3}>
           {trending.map((movie) => (
-            <Grid item key={movie.id} xs={12} sm={6} md={4} lg={3}>
+            <Grid item key={movie.id} xs={12} sm={6} md={4}>
               <MovieCard movie={movie} />
             </Grid>
           ))}

@@ -7,9 +7,6 @@ export const MovieContext = createContext();
 export const MovieProvider = ({ children }) => {
   const [movies, setMovies] = useState([]);
   const [trending, setTrendingMovies] = useState([]);
-  const [lastSearch, setLastSearch] = useState(
-    () => localStorage.getItem("lastSearch") || ""
-  );
   const [page, setPage] = useState(1);
   const [themeMode, setThemeMode] = useState(() => {
     return localStorage.getItem("themeMode") || "light";
@@ -34,6 +31,14 @@ export const MovieProvider = ({ children }) => {
     return [];
   });
 
+  // Load last search from user-specific localStorage or empty string
+  const [lastSearch, setLastSearch] = useState(() => {
+    if (user && user.username) {
+      return localStorage.getItem(`lastSearch_${user.username}`) || '';
+    }
+    return '';
+  });
+
   useEffect(() => {
     if (user && user.username) {
       localStorage.setItem(
@@ -43,9 +48,12 @@ export const MovieProvider = ({ children }) => {
     }
   }, [favorites, user]);
 
+  // Save last search to user-specific localStorage
   useEffect(() => {
-    localStorage.setItem("lastSearch", lastSearch);
-  }, [lastSearch]);
+    if (user && user.username && lastSearch) {
+      localStorage.setItem(`lastSearch_${user.username}`, lastSearch);
+    }
+  }, [lastSearch, user]);
 
   const searchMovies = async (query, pageNum = 1, appliedFilters = filters) => {
     if (!query || query.trim() === "") return;
@@ -249,20 +257,49 @@ export const MovieProvider = ({ children }) => {
   };
 
   const login = (username, password) => {
-    // For demo purposes, accept any non-empty username/password
-    if (username && password) {
-      const userData = { username };
-      setUser(userData);
-      setIsAuthenticated(true);
-      localStorage.setItem("movieAppUser", JSON.stringify(userData));
-
-      // Load the user's favorites when they log in
-      const userFavorites = localStorage.getItem(`favorites_${username}`);
-      setFavorites(userFavorites ? JSON.parse(userFavorites) : []);
-
-      return true;
+    try {
+      // Get users from localStorage
+      const users = JSON.parse(localStorage.getItem("movieAppUsers") || "[]");
+      
+      // Find the user in the stored users array
+      const user = users.find(u => 
+        u.username.toLowerCase() === username.toLowerCase() && u.password === password
+      );
+      
+      if (user) {
+        // Create user data object
+        const userData = { username: user.username };
+        
+        // Update context state
+        setUser(userData);
+        setIsAuthenticated(true);
+        
+        // Store user data in localStorage
+        localStorage.setItem("movieAppUser", JSON.stringify(userData));
+        
+        // Load user's favorites
+        const userFavorites = localStorage.getItem(`favorites_${user.username}`);
+        setFavorites(userFavorites ? JSON.parse(userFavorites) : []);
+        
+        // Load user-specific search history
+        const userLastSearch = localStorage.getItem(`lastSearch_${username}`);
+        if (userLastSearch) {
+          setLastSearch(userLastSearch);
+        } else {
+          setLastSearch(''); // Clear last search if new user has none
+        }
+        
+        // Log for debugging
+        console.log("Login successful, user authenticated:", userData);
+        
+        return true;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error("Login error:", error);
+      return false;
     }
-    return false;
   };
 
   const logout = () => {
@@ -273,6 +310,9 @@ export const MovieProvider = ({ children }) => {
 
     // Clear favorites when logging out
     setFavorites([]);
+
+    // Clear last search when logging out
+    setLastSearch('');
   };
 
   const toggleTheme = () => {

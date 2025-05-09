@@ -1,6 +1,5 @@
-import React, { useState, useContext, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { MovieContext } from "../context/MovieContext";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   TextField,
   Button,
@@ -9,48 +8,39 @@ import {
   CircularProgress,
   Typography,
   Link,
-  Paper,
   InputAdornment,
   IconButton,
-  FormHelperText,
+  Paper,
   Fade,
 } from "@mui/material";
-import {
-  Person,
-  Lock,
-  Visibility,
-  VisibilityOff,
-  CheckCircle,
-} from "@mui/icons-material";
+import { Visibility, VisibilityOff, Person, Lock, CheckCircle } from "@mui/icons-material";
 import { toast } from "react-toastify";
 
-function Login() {
+function Register() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
+  // Field-specific validation states
   const [errors, setErrors] = useState({
     username: "",
     password: "",
+    confirmPassword: "",
   });
 
+  // Track which fields have been touched
   const [touched, setTouched] = useState({
     username: false,
     password: false,
+    confirmPassword: false,
   });
 
-  const { login } = useContext(MovieContext);
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  useEffect(() => {
-    if (location.state?.registeredUsername) {
-      setUsername(location.state.registeredUsername);
-    }
-  }, [location]);
-
+  // Validate username
   const validateUsername = (value) => {
     if (!value.trim()) {
       return "Username or email is required";
@@ -90,13 +80,29 @@ function Login() {
     }
   };
 
+  // Validate password
   const validatePassword = (value) => {
-    if (!value.trim()) {
+    if (!value) {
       return "Password is required";
+    }
+    if (value.length < 6) {
+      return "Password must be at least 6 characters long";
     }
     return "";
   };
 
+  // Validate confirm password
+  const validateConfirmPassword = (value) => {
+    if (!value) {
+      return "Please confirm your password";
+    }
+    if (value !== password) {
+      return "Passwords do not match";
+    }
+    return "";
+  };
+
+  // Handle key press to block special characters except @
   const handleUsernameKeyDown = (e) => {
     const allowedKeys = [
       "Backspace",
@@ -120,54 +126,87 @@ function Login() {
     }
   };
 
+  // Handle field change with validation
   const handleChange = (e) => {
     const { name, value } = e.target;
 
+    // Update respective state
     if (name === "username") setUsername(value);
     if (name === "password") setPassword(value);
+    if (name === "confirmPassword") setConfirmPassword(value);
 
-    let errorMessage = "";
-    if (name === "username") errorMessage = validateUsername(value);
-    if (name === "password") errorMessage = validatePassword(value);
+    // Validate field
+    let error = "";
+    if (name === "username") error = validateUsername(value);
+    if (name === "password") error = validatePassword(value);
+    if (name === "confirmPassword") error = validateConfirmPassword(value);
 
-    setErrors((prev) => ({
-      ...prev,
-      [name]: errorMessage,
-    }));
+    // Update error state
+    setErrors({
+      ...errors,
+      [name]: error,
+    });
 
+    // Clear general error on input change
     setError("");
   };
 
+  // Mark field as touched on blur
   const handleBlur = (e) => {
     const { name } = e.target;
-    setTouched((prev) => ({
-      ...prev,
+    setTouched({
+      ...touched,
       [name]: true,
-    }));
+    });
   };
 
+  // Update confirm password validation when password changes
+  useEffect(() => {
+    if (touched.confirmPassword && confirmPassword) {
+      setErrors((prev) => ({
+        ...prev,
+        confirmPassword: validateConfirmPassword(confirmPassword),
+      }));
+    }
+  }, [password, confirmPassword, touched.confirmPassword]);
+
+  // Check if form is valid
   const isFormValid = () => {
-    return !errors.username && !errors.password && username && password;
+    return (
+      !errors.username &&
+      !errors.password &&
+      !errors.confirmPassword &&
+      username &&
+      password &&
+      confirmPassword
+    );
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Mark all fields as touched
     setTouched({
       username: true,
       password: true,
+      confirmPassword: true,
     });
 
+    // Validate all fields
     const usernameError = validateUsername(username);
     const passwordError = validatePassword(password);
+    const confirmPasswordError = validateConfirmPassword(confirmPassword);
 
+    // Update error states
     setErrors({
       username: usernameError,
       password: passwordError,
+      confirmPassword: confirmPasswordError,
     });
 
-    if (usernameError || passwordError) {
-      setError("Please complete all required fields");
+    // Stop if any validation errors
+    if (usernameError || passwordError || confirmPasswordError) {
+      setError("Please correct all fields before submitting");
       return;
     }
 
@@ -175,42 +214,40 @@ function Login() {
     setError("");
 
     try {
+      // Simulate API delay
       await new Promise((resolve) => setTimeout(resolve, 800));
 
-      const users = JSON.parse(localStorage.getItem("movieAppUsers") || "[]");
-      const user = users.find(
-        (u) =>
-          u.username.toLowerCase() === username.toLowerCase() &&
-          u.password === password
-      );
+      // Get existing users
+      const existingUsers = JSON.parse(localStorage.getItem("movieAppUsers") || "[]");
 
-      if (user) {
-        const loginSuccess = login(username, password);
-
-        if (loginSuccess) {
-          toast.success(`Welcome back, ${user.username}!`, {
-            position: "top-center",
-            autoClose: 2000,
-          });
-
-          setTimeout(() => {
-            navigate("/", { replace: true });
-          }, 100);
-        } else {
-          setError("Login failed. Please try again.");
-          toast.error("Login failed. Something went wrong.", {
-            position: "top-center",
-          });
-        }
-      } else {
-        setError("Invalid username or password");
-        toast.error("Login failed. Please check your credentials.", {
-          position: "top-center",
-        });
+      // Check if username already exists
+      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(username);
+      if (
+        existingUsers.some((user) => user.username.toLowerCase() === username.toLowerCase())
+      ) {
+        setError(isEmail ? "This email is already registered" : "This username is already taken");
+        setIsLoading(false);
+        return;
       }
+
+      // Add new user
+      const newUser = { username, password };
+      existingUsers.push(newUser);
+      localStorage.setItem("movieAppUsers", JSON.stringify(existingUsers));
+
+      // Show success notification
+      toast.success("Registration successful! You can now log in.", {
+        position: "top-center",
+        autoClose: 3000,
+      });
+
+      // Navigate to login page
+      setTimeout(() => {
+        navigate("/login", { state: { registeredUsername: username } });
+      }, 1000);
     } catch (err) {
-      setError("Login failed. Please try again.");
-      console.error("Login error:", err);
+      setError("Registration failed. Please try again.");
+      console.error("Registration error:", err);
     } finally {
       setIsLoading(false);
     }
@@ -236,9 +273,7 @@ function Login() {
               sx={{
                 mb: 3,
                 borderRadius: 2,
-                "& .MuiAlert-icon": {
-                  fontSize: "1.5rem",
-                },
+                "& .MuiAlert-icon": { fontSize: "1.2rem" },
               }}
             >
               {error}
@@ -268,9 +303,7 @@ function Login() {
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <Person
-                  color={touched.username && errors.username ? "error" : "action"}
-                />
+                <Person color={touched.username && errors.username ? "error" : "action"} />
               </InputAdornment>
             ),
             endAdornment: username && !errors.username ? (
@@ -296,11 +329,6 @@ function Login() {
             },
           }}
         />
-        {touched.username && errors.username && (
-          <FormHelperText error sx={{ ml: 2, mt: -0.5, mb: 1 }}>
-            {errors.username}
-          </FormHelperText>
-        )}
 
         <TextField
           label="Password"
@@ -316,14 +344,12 @@ function Login() {
           helperText={
             touched.password && errors.password
               ? errors.password
-              : "Enter your password"
+              : "Password must be at least 6 characters"
           }
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <Lock
-                  color={touched.password && errors.password ? "error" : "action"}
-                />
+                <Lock color={touched.password && errors.password ? "error" : "action"} />
               </InputAdornment>
             ),
             endAdornment: (
@@ -352,11 +378,55 @@ function Login() {
             },
           }}
         />
-        {touched.password && errors.password && (
-          <FormHelperText error sx={{ ml: 2, mt: -0.5, mb: 1 }}>
-            {errors.password}
-          </FormHelperText>
-        )}
+
+        <TextField
+          label="Confirm Password"
+          name="confirmPassword"
+          fullWidth
+          type={showConfirmPassword ? "text" : "password"}
+          value={confirmPassword}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          margin="normal"
+          required
+          error={touched.confirmPassword && !!errors.confirmPassword}
+          helperText={
+            touched.confirmPassword && errors.confirmPassword
+              ? errors.confirmPassword
+              : "Re-enter your password to confirm"
+          }
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Lock color={touched.confirmPassword && errors.confirmPassword ? "error" : "action"} />
+              </InputAdornment>
+            ),
+            endAdornment: (
+              <InputAdornment position="end">
+                {confirmPassword && !errors.confirmPassword && (
+                  <CheckCircle color="success" sx={{ mr: 1 }} />
+                )}
+                <IconButton
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  edge="end"
+                >
+                  {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+            sx: { borderRadius: 2 },
+          }}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              borderRadius: 2,
+              transition: "all 0.2s ease",
+              "&.Mui-error .MuiOutlinedInput-notchedOutline": {
+                borderColor: "error.main",
+                borderWidth: 2,
+              },
+            },
+          }}
+        />
 
         <Button
           type="submit"
@@ -390,16 +460,16 @@ function Login() {
           }}
           disabled={isLoading || !isFormValid()}
         >
-          {isLoading ? <CircularProgress size={24} /> : "Sign In"}
+          {isLoading ? <CircularProgress size={24} /> : "Create Account"}
         </Button>
 
         <Box sx={{ textAlign: "center", mt: 2 }}>
           <Typography variant="body2">
-            Don't have an account?{" "}
+            Already have an account?{" "}
             <Link
               component="button"
               variant="body2"
-              onClick={() => navigate("/register")}
+              onClick={() => navigate("/login")}
               sx={{
                 fontWeight: "bold",
                 transition: "all 0.2s ease",
@@ -409,7 +479,7 @@ function Login() {
                 },
               }}
             >
-              Register here
+              Sign In
             </Link>
           </Typography>
         </Box>
@@ -418,4 +488,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default Register;
