@@ -89,10 +89,6 @@ This project uses the [TMDb API](https://developers.themoviedb.org/3) to fetch m
 
 - Oshadha Pathiraja - [GitHub Profile](https://github.com/oshadha2k01)
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## 🙏 Acknowledgements
 
 - [The Movie Database (TMDb)](https://www.themoviedb.org/) for providing the API
