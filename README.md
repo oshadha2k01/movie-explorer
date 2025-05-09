@@ -80,7 +80,6 @@ This project uses the [TMDb API](https://developers.themoviedb.org/3) to fetch m
 
 ## 🔮 Future Enhancements
 
-- Integration of YouTube trailers for movies
 - User reviews and ratings
 - Social sharing functionality
 - Personalized movie recommendations
@@ -88,7 +87,7 @@ This project uses the [TMDb API](https://developers.themoviedb.org/3) to fetch m
 
 ## 👤 Author
 
-- Your Name - [GitHub Profile](https://github.com/yourusername)
+- Oshadha Pathiraja - [GitHub Profile](https://github.com/oshadha2k01)
 
 ## 📄 License
 
